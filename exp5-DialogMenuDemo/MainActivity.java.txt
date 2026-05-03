@@ -1,0 +1,94 @@
+package com.example.dialogmenudemo;
+
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button btnSimple, btnCustom;
+    ListView listView;
+    String[] items = {"Item 1", "Item 2", "Item 3", "Item 4"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnSimple = findViewById(R.id.btnSimple);
+        btnCustom = findViewById(R.id.btnCustom);
+        listView = findViewById(R.id.listView);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                items);
+
+        listView.setAdapter(adapter);
+
+        registerForContextMenu(listView);
+
+        // Simple Dialog
+        btnSimple.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Simple Dialog")
+                    .setMessage("This is a simple dialog message")
+                    .setPositiveButton("OK", (dialog, which) ->
+                            Snackbar.make(v, "OK clicked", Snackbar.LENGTH_SHORT).show())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
+        // Custom Dialog
+        btnCustom.setOnClickListener(v -> {
+
+            View dialogView = getLayoutInflater()
+                    .inflate(R.layout.custom_dialog, null);
+
+            EditText etName = dialogView.findViewById(R.id.etName);
+            EditText etEmail = dialogView.findViewById(R.id.etEmail);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Custom Dialog")
+                    .setView(dialogView)
+                    .setPositiveButton("Submit", (dialog, which) ->
+                            Snackbar.make(v, "Form submitted", Snackbar.LENGTH_SHORT).show())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+    }
+
+    // OPTIONS MENU
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Snackbar.make(findViewById(android.R.id.content),
+                item.getTitle() + " clicked",
+                Snackbar.LENGTH_SHORT).show();
+        return true;
+    }
+
+    // CONTEXT MENU
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Snackbar.make(findViewById(android.R.id.content),
+                item.getTitle() + " selected",
+                Snackbar.LENGTH_SHORT).show();
+        return true;
+    }
+}
