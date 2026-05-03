@@ -1,0 +1,38 @@
+package com.example.gridlayoutapp;
+
+import android.os.Bundle;
+import android.widget.GridView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    GridView gridView;
+
+    int[] images = {
+            R.drawable.img1,
+            R.drawable.img2,
+            R.drawable.img3,
+            R.drawable.img4,
+            R.drawable.img5
+    };
+
+    String[] names = {
+            "Roll no.1",
+            "Roll no.2",
+            "Roll no.3",
+            "Roll no.4",
+            "Roll no.5"
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        gridView = findViewById(R.id.gridView);
+
+        GridAdapter adapter = new GridAdapter(this, images, names);
+        gridView.setAdapter(adapter);
+    }
+}
