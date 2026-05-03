@@ -1,0 +1,67 @@
+package com.example.imagesliderapp;
+
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
+public class MainActivity extends AppCompatActivity {
+
+    ViewPager2 viewPager;
+    ImageButton btnPrev, btnNext;
+    LinearLayout dotLayout;
+
+    int[] images = {
+            R.drawable.img1,
+            R.drawable.img2,
+            R.drawable.img3,
+            R.drawable.img4,
+            R.drawable.img5
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        viewPager = findViewById(R.id.viewPager);
+        btnPrev = findViewById(R.id.btnPrev);
+        btnNext = findViewById(R.id.btnNext);
+        dotLayout = findViewById(R.id.dotLayout);
+
+        SliderAdapter adapter = new SliderAdapter(images);
+        viewPager.setAdapter(adapter);
+
+        addDots(0);
+
+        viewPager.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        super.onPageSelected(position);
+                        addDots(position);
+                    }
+                });
+
+        btnPrev.setOnClickListener(v ->
+                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1));
+
+        btnNext.setOnClickListener(v ->
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1));
+    }
+
+    private void addDots(int position) {
+        dotLayout.removeAllViews();
+
+        for(int i=0; i<images.length; i++) {
+            TextView dot = new TextView(this);
+            dot.setText("●");
+            dot.setTextSize(20);
+            dot.setPadding(5,0,5,0);
+            dot.setTextColor(i == position ?
+                    getResources().getColor(android.R.color.black) :
+                    getResources().getColor(android.R.color.darker_gray));
+            dotLayout.addView(dot);
+        }
+    }
+}
