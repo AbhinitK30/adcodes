@@ -1,0 +1,36 @@
+package com.example.loginapp;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class WelcomeActivity extends AppCompatActivity {
+
+    TextView tvWelcome;
+    Button btnSignOut;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
+
+        tvWelcome = findViewById(R.id.tvWelcome);
+        btnSignOut = findViewById(R.id.btnSignOut);
+
+        String username = getIntent().getStringExtra("username");
+        tvWelcome.setText("Welcome, " + username);
+
+        btnSignOut.setOnClickListener(v -> {
+
+            Intent intent = new Intent(WelcomeActivity.this, HomeActivity.class);
+
+            // Clears all previous activities
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            startActivity(intent);
+            finish();
+        });
+    }
+}
