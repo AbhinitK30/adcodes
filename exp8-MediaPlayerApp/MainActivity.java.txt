@@ -1,0 +1,104 @@
+package com.example.mediaplayerapp;
+
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
+    ImageButton playPauseButton, nextButton, previousButton;
+    SeekBar seekBar;
+    TextView songTitle, artistName;
+    ImageView albumArt;
+
+    ArrayList<Song> playlist;
+    int currentIndex = 0;
+    Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        playPauseButton = findViewById(R.id.playPauseButton);
+        nextButton = findViewById(R.id.nextButton);
+        previousButton = findViewById(R.id.previousButton);
+        seekBar = findViewById(R.id.songProgressSeekBar);
+        songTitle = findViewById(R.id.songTitleTextView);
+        artistName = findViewById(R.id.artistNameTextView);
+        albumArt = findViewById(R.id.albumArtImageView);
+
+        playlist = new ArrayList<>();
+        playlist.add(new Song("Perfect", "Ed Sheeran", R.raw.perfect, R.drawable.img1));
+        playlist.add(new Song("Yellow", "Coldplay", R.raw.yellow, R.drawable.img2));
+
+        setupSong(currentIndex);
+
+        playPauseButton.setOnClickListener(v -> {
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+                playPauseButton.setImageResource(R.drawable.ic_play);
+            } else {
+                mediaPlayer.start();
+                playPauseButton.setImageResource(R.drawable.ic_pause);
+            }
+        });
+
+        nextButton.setOnClickListener(v -> {
+            currentIndex = (currentIndex + 1) % playlist.size();
+            setupSong(currentIndex);
+        });
+
+        previousButton.setOnClickListener(v -> {
+            currentIndex = (currentIndex - 1 + playlist.size()) % playlist.size();
+            setupSong(currentIndex);
+        });
+    }
+
+    private void setupSong(int index){
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
+
+        Song song = playlist.get(index);
+        mediaPlayer = MediaPlayer.create(this, song.getAudioResId());
+
+        songTitle.setText(song.getTitle());
+        artistName.setText(song.getArtist());
+        albumArt.setImageResource(song.getImageResId());
+
+        seekBar.setMax(mediaPlayer.getDuration());
+
+        mediaPlayer.start();
+        playPauseButton.setImageResource(R.drawable.ic_pause);
+
+        updateSeekBar();
+    }
+
+    private void updateSeekBar(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(mediaPlayer != null){
+                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        },1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
+    }
+}
