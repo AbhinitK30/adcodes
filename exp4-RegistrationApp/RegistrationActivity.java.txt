@@ -1,0 +1,63 @@
+package com.example.registrationapp;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class RegistrationActivity extends AppCompatActivity {
+
+    EditText etName;
+    Spinner spinnerSubject;
+    RadioGroup radioGroup;
+    CheckBox cbGraduate, cbPostGraduate, cbPhd;
+    Button btnSubmit;
+
+    String[] subjects = {"Computer Science", "IT", "Electronics", "Mechanical"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_registration);
+
+        etName = findViewById(R.id.etName);
+        spinnerSubject = findViewById(R.id.spinnerSubject);
+        radioGroup = findViewById(R.id.radioGroupGender);
+        cbGraduate = findViewById(R.id.cbGraduate);
+        cbPostGraduate = findViewById(R.id.cbPostGraduate);
+        cbPhd = findViewById(R.id.cbPhd);
+        btnSubmit = findViewById(R.id.btnSubmit);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                subjects);
+
+        spinnerSubject.setAdapter(adapter);
+
+        btnSubmit.setOnClickListener(v -> {
+
+            String name = etName.getText().toString();
+            String subject = spinnerSubject.getSelectedItem().toString();
+
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            RadioButton selectedRadio = findViewById(selectedId);
+            String gender = selectedRadio.getText().toString();
+
+            String qualification = "";
+
+            if(cbGraduate.isChecked()) qualification += "Graduate, ";
+            if(cbPostGraduate.isChecked()) qualification += "Post Graduate, ";
+            if(cbPhd.isChecked()) qualification += "PhD";
+
+            Intent intent = new Intent(this, ShowActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("subject", subject);
+            intent.putExtra("gender", gender);
+            intent.putExtra("qualification", qualification);
+
+            startActivity(intent);
+        });
+    }
+}

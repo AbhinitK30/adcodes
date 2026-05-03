@@ -1,0 +1,35 @@
+package com.example.registrationapp;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ShowActivity extends AppCompatActivity {
+
+    TextView tvDetails;
+    Button btnBack;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show);
+
+        tvDetails = findViewById(R.id.tvDetails);
+        btnBack = findViewById(R.id.btnBack);
+
+        String name = getIntent().getStringExtra("name");
+        String subject = getIntent().getStringExtra("subject");
+        String gender = getIntent().getStringExtra("gender");
+        String qualification = getIntent().getStringExtra("qualification");
+
+        String result = "Name\n" + name +
+                "\n\nSubject\n" + subject +
+                "\n\nGender\n" + gender +
+                "\n\nQualifications\n" + qualification;
+
+        tvDetails.setText(result);
+
+        btnBack.setOnClickListener(v -> finish());
+    }
+}
