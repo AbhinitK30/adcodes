@@ -1,0 +1,101 @@
+package com.example.datastorageapp;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.io.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etFileName, etData;
+    RadioButton rbInternal, rbExternal;
+    Button btnSave, btnLoad;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etFileName = findViewById(R.id.etFileName);
+        etData = findViewById(R.id.etData);
+        rbInternal = findViewById(R.id.rbInternal);
+        rbExternal = findViewById(R.id.rbExternal);
+        btnSave = findViewById(R.id.btnSave);
+        btnLoad = findViewById(R.id.btnLoad);
+
+        btnSave.setOnClickListener(v -> saveData());
+        btnLoad.setOnClickListener(v -> loadData());
+    }
+
+    private void saveData() {
+        String fileName = etFileName.getText().toString().trim();
+        String data = etData.getText().toString().trim();
+
+        if(fileName.isEmpty() || data.isEmpty()) {
+            Toast.makeText(this, "Enter filename and data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            if(rbInternal.isChecked()) {
+                FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+                fos.write(data.getBytes());
+                fos.close();
+                Toast.makeText(this, "Saved to Internal Storage", Toast.LENGTH_SHORT).show();
+            }
+            else if(rbExternal.isChecked()) {
+                File file = new File(getExternalFilesDir(null), fileName);
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(data.getBytes());
+                fos.close();
+                Toast.makeText(this, "Saved to External Storage", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(this, "Select Storage Type", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadData() {
+        String fileName = etFileName.getText().toString().trim();
+
+        if(fileName.isEmpty()) {
+            Toast.makeText(this, "Enter filename", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            BufferedReader reader;
+            if(rbInternal.isChecked()) {
+                FileInputStream fis = openFileInput(fileName);
+                reader = new BufferedReader(new InputStreamReader(fis));
+                Toast.makeText(this, "Loaded from Internal Storage", Toast.LENGTH_SHORT).show();
+            }
+            else if(rbExternal.isChecked()) {
+                File file = new File(getExternalFilesDir(null), fileName);
+                FileInputStream fis = new FileInputStream(file);
+                reader = new BufferedReader(new InputStreamReader(fis));
+                Toast.makeText(this, "Loaded from External Storage", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(this, "Select Storage Type", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while((line = reader.readLine()) != null){
+                sb.append(line).append("\n");
+            }
+            reader.close();
+            etData.setText(sb.toString().trim());
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+}
